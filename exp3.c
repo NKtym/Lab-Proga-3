@@ -5,14 +5,9 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != 4)
+    if (argc != 4)//относительный путь тоже идет в счёт
     {
         printf("Неверное количество аргументов\n");
-        return -1;
-    }
-    else if ((strcmp(argv[1], "encode")) && (strcmp(argv[1], "decode")))
-    {
-        printf("Неверно написана команда кодирования/декодирования\n");
         return -1;
     }
     char *command = argv[1];
@@ -25,6 +20,10 @@ int main(int argc, char *argv[])
     else if (strcmp(command, "decode") == 0)
     {
         decode_file(in_file_name, out_file_name);
+    }
+    else{
+	printf("Неверно написана команда кодирования/декодирования\n");
+        return -1;
     }
     return 0;
 }

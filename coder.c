@@ -5,26 +5,26 @@
 
 int encode(uint32_t code_point, CodeUnits *code_units)
 {
-    if (code_point < 0x80)
+    if (code_point < 0x80)//занимает 7
     {
         code_units->length = 1;
         code_units->code[0] = code_point;
     }
 
-    else if (code_point < 0x800)
+    else if (code_point < 0x800)//11 знач разрядов
     {
         code_units->length = 2;
         code_units->code[0] = 0xc0 | (code_point >> 6);
-        code_units->code[1] = 0x80 | (code_point & 0x3f);
+        code_units->code[1] = 0x80 | (code_point & 0x3f);//отбрасывание всего до 6 бит + 100000
     }
-    else if (code_point < 0x10000)
+    else if (code_point < 0x10000)//16
     {
         code_units->length = 3;
         code_units->code[0] = 0xe0 | (code_point >> 12);
         code_units->code[1] = 0x80 | ((code_point >> 6) & 0x3f);
         code_units->code[2] = 0x80 | (code_point & 0x3f);
     }
-    else if (code_point < 0x200000)
+    else if (code_point < 0x200000)//21
     {
         code_units->length = 4;
         code_units->code[0] = 0xf0 | (code_point >> 18);
@@ -40,7 +40,7 @@ int encode(uint32_t code_point, CodeUnits *code_units)
 uint32_t decode(const CodeUnits *code_unit)
 {
     uint32_t value = 0;
-    if (code_unit->code[0] < 0x80)
+    if (code_unit->code[0] < 0x80)//первый байт массива код, если не соответсвует маске то ошибка
     {
         value = code_unit->code[0];
     }
@@ -63,7 +63,6 @@ uint32_t decode(const CodeUnits *code_unit)
 
 int read_next_code_unit(FILE *in, CodeUnits *code_units)
 {
-
     fread(&(code_units->code[0]), 1, 1, in);
     if (code_units->code[0] < 0x80)
     {
@@ -131,8 +130,8 @@ int read_next_code_unit(FILE *in, CodeUnits *code_units)
     return 0;
 }
 
-int write_code_unit(FILE *out, const CodeUnits *code_units)
+int write_code_unit(FILE *out, const CodeUnits *code_units)//пишет в файл одно закодированное число(CodeUnit(а))
 {
-    int result = fwrite(code_units->code, 1, code_units->length, out);
+    int result = fwrite(code_units->code, 1, code_units->length, out);//откуда,блоками по 1 байту, сколько раз, куда
     return result;
 }

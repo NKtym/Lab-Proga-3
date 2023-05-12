@@ -19,22 +19,6 @@ size_t encode_varint(uint32_t value, uint8_t* buf)
     return cur - buf;//сколько занимает число в байтах
 }
 
-uint32_t decode_varint(const uint8_t** bufp)
-{
-    const uint8_t* cur = *bufp;
-    uint8_t byte = *cur++;
-    uint32_t value = byte & 0x7f;
-    size_t shift = 7;
-    while (byte >= 0x80) {
-        byte = *cur++;
-        value += (byte & 0x7f) << shift;
-        shift += 7;
-    }
-    *bufp = cur;
-    return value;
-}
-
-
 uint32_t generate_number()
 {
     const int r = rand(); //max 2147483647, на каждый байт один служебный бит в varint(число может стать больше при сжатии)
@@ -67,7 +51,7 @@ int main(){
     }
     fwrite(values, sizeof(uint32_t), 1000000, uncompressed);
     uint8_t buf[4] = {};
-    uint8_t *cur = malloc(1000000 * 5);
+    uint8_t *cur = malloc(1000000 * 4);
     uint8_t *start = cur;
     size_t size;
     for (int i = 0; i < 1000000; i++)
